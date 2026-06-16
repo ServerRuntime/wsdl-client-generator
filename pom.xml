@@ -44,12 +44,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>tr.test.ibb</groupId>
-            <artifactId>fys-muhasebe-wsclient</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
         <!-- CXF WSDLToJava — programatik kod üretimi için (plugin değil) -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
