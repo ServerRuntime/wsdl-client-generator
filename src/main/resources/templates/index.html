@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>WSDL Client Generator</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}"/>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script>
+        (function() {
+            const t = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+<div class="page">
+
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M4 6h5l3 4-3 4H4l3-4-3-4zm6 0h6" stroke="white" stroke-width="1.8"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <span>WSDL Client Generator</span>
+            </div>
+            <div class="header-right">
+                <button class="btn-guide" id="guideBtn" title="Kullanım Kılavuzu">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 8v.01M12 11v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    Kılavuz
+                </button>
+                <button class="theme-toggle" id="themeToggle" title="Tema değiştir" aria-label="Tema değiştir">
+                    <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 2v2m0 16v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M2 12h2m16 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">SOAP Client Oluştur</h1>
+                <p class="card-subtitle">Prod ve Test WSDL'lerinizi girin, Java versiyonunu seçin — ServiceBean util sınıfı dahil derlemiş fat JAR'ı indirin.</p>
+            </div>
+
+            <div th:if="${error}" class="alert alert-error">
+                <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <span th:text="${error}">Hata</span>
+            </div>
+
+            <form th:action="@{/generate}" method="post" enctype="multipart/form-data" id="genForm">
+
+                <!-- ── 1. WSDL Girişleri ──────────────────────── -->
+                <div class="form-section">
+                    <div class="section-label">1. WSDL Kaynakları</div>
+
+                    <div class="wsdl-grid">
+
+                        <!-- Prod WSDL -->
+                        <div class="wsdl-env-block">
+                            <div class="wsdl-env-header">
+                                <span class="env-badge env-prod">PROD</span>
+                                <span class="env-desc">Zorunlu</span>
+                            </div>
+                            <div class="tab-group">
+                                <button type="button" class="tab active" data-tab="prod-url">URL</button>
+                                <button type="button" class="tab" data-tab="prod-file">Dosya</button>
+                            </div>
+                            <div id="tab-prod-url" class="tab-content">
+                                <div class="input-group">
+                                    <label class="input-label" for="wsdlUrlProd">Prod WSDL URL</label>
+                                    <input type="url" id="wsdlUrlProd" name="wsdlUrlProd"
+                                           placeholder="https://example.com/service?wsdl" class="input"/>
+                                </div>
+                            </div>
+                            <div id="tab-prod-file" class="tab-content hidden">
+                                <div class="input-group">
+                                    <label class="input-label">Prod WSDL Dosyası</label>
+                                    <div class="file-drop" id="fileDropProd">
+                                        <input type="file" id="wsdlFileProd" name="wsdlFileProd" accept=".wsdl,.xml" class="file-input"/>
+                                        <div class="file-placeholder">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 16V8m0 0-3 3m3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M20 16.5A4.5 4.5 0 0016 12H15a7 7 0 10-13 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                            <span class="file-text">Sürükle veya <span class="link">seç</span></span>
+                                        </div>
+                                        <div class="file-selected hidden" id="fileSelectedProd">
+                                            <svg width="14" height="14" viewBox="0 0 16 16"><path d="M13 5L6.5 11.5 3 8" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                            <span id="fileNameProd"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Test WSDL -->
+                        <div class="wsdl-env-block">
+                            <div class="wsdl-env-header">
+                                <span class="env-badge env-test">TEST</span>
+                                <span class="env-desc">Opsiyonel — girilmezse Prod kullanılır</span>
+                            </div>
+                            <div class="tab-group">
+                                <button type="button" class="tab active" data-tab="test-url">URL</button>
+                                <button type="button" class="tab" data-tab="test-file">Dosya</button>
+                            </div>
+                            <div id="tab-test-url" class="tab-content">
+                                <div class="input-group">
+                                    <label class="input-label" for="wsdlUrlTest">Test WSDL URL</label>
+                                    <input type="url" id="wsdlUrlTest" name="wsdlUrlTest"
+                                           placeholder="https://test.example.com/service?wsdl" class="input"/>
+                                </div>
+                            </div>
+                            <div id="tab-test-file" class="tab-content hidden">
+                                <div class="input-group">
+                                    <label class="input-label">Test WSDL Dosyası</label>
+                                    <div class="file-drop" id="fileDropTest">
+                                        <input type="file" id="wsdlFileTest" name="wsdlFileTest" accept=".wsdl,.xml" class="file-input"/>
+                                        <div class="file-placeholder">
+                                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 16V8m0 0-3 3m3-3 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M20 16.5A4.5 4.5 0 0016 12H15a7 7 0 10-13 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                            <span class="file-text">Sürükle veya <span class="link">seç</span></span>
+                                        </div>
+                                        <div class="file-selected hidden" id="fileSelectedTest">
+                                            <svg width="14" height="14" viewBox="0 0 16 16"><path d="M13 5L6.5 11.5 3 8" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round"/></svg>
+                                            <span id="fileNameTest"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kod üretimi hangi WSDL'den yapılsın -->
+                    <div class="codegen-select">
+                        <span class="codegen-label">Kod üretimi yapılacak WSDL:</span>
+                        <label class="codegen-option">
+                            <input type="radio" name="generateFrom" value="PROD" checked/>
+                            <span class="codegen-pill">
+                                <span class="env-badge env-prod">PROD</span>
+                                Prod WSDL
+                            </span>
+                        </label>
+                        <label class="codegen-option">
+                            <input type="radio" name="generateFrom" value="TEST"/>
+                            <span class="codegen-pill">
+                                <span class="env-badge env-test">TEST</span>
+                                Test WSDL
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- ServiceBean ortam bilgisi -->
+                    <div class="info-box">
+                        <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 7v5m0-6.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <span>Üretilen <code>ServiceBean</code> ortamı <code>SOA_ENVIRONMENT</code> env var'ından okur. <code>test</code> ise Test, diğer tüm değerlerde Prod WSDL kullanılır.</span>
+                    </div>
+                </div>
+
+                <!-- ── 2. Java Versiyonu ──────────────────────── -->
+                <div class="form-section">
+                    <div class="section-label">2. Java Versiyonu</div>
+                    <div class="version-grid">
+                        <label th:each="v : ${javaVersions}" class="version-card">
+                            <input type="radio" name="javaVersion" th:value="${v.name()}"
+                                   th:checked="${v.name() == 'JAVA_17'}"/>
+                            <div class="version-inner">
+                                <span class="version-num"  th:text="${v.label}">17</span>
+                                <span class="version-tool" th:text="${v.usesCxf() ? 'Apache CXF 4.x' : 'JAX-WS RI'}">CXF</span>
+                                <span class="version-ns"   th:text="${v.isJakarta() ? 'jakarta.*' : 'javax.*'}">jakarta.*</span>
+                                <span th:if="${v.name() == 'JAVA_17'}" class="version-badge">Önerilen</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ── 3. Proje Bilgileri ─────────────────────── -->
+                <div class="form-section">
+                    <div class="section-label">3. Proje Bilgileri <span class="optional">(opsiyonel)</span></div>
+                    <div class="coord-grid">
+                        <div class="input-group">
+                            <label class="input-label" for="groupId">Group ID</label>
+                            <input type="text" id="groupId" name="groupId" value="com.example" class="input mono"/>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" for="artifactId">Artifact ID</label>
+                            <input type="text" id="artifactId" name="artifactId" value="soap-client" class="input mono"/>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label" for="version">Version</label>
+                            <input type="text" id="version" name="version" value="1.0.0" class="input mono"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Üretilecekler özet ────────────────────── -->
+                <div class="output-preview">
+                    <div class="output-title">ZIP içeriği</div>
+                    <div class="output-items">
+                        <div class="output-item">📄 pom.xml</div>
+                        <div class="output-item">📄 <span id="previewProdName">soap-client-Prod.wsdl</span></div>
+                        <div class="output-item">📄 <span id="previewTestName">soap-client-Test.wsdl</span></div>
+                        <div class="output-item">☕ <span id="previewBean">SoapClientServiceBean.java</span></div>
+                        <div class="output-item">📦 <span id="previewJar">lib/soap-client-1.0.0-shaded.jar</span></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M3 9h12m0 0-4-4m4 4-4 4" stroke="currentColor"
+                              stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Client Oluştur
+                </button>
+            </form>
+        </div>
+
+        <!-- Nasıl Çalışır -->
+        <div class="how-section">
+            <h2 class="how-title">Nasıl Çalışır?</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-text"><strong>WSDL İndir</strong>Prod + Test WSDL doğrulanır ve kaydedilir.</div>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-text"><strong>Kod Üretimi</strong>Stub sınıflar + ServiceBean util üretilir.</div>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-text"><strong>Fat JAR Build</strong>Tüm dependency'ler tek JAR'a paketlenir.</div>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-text"><strong>ZIP İndir</strong>pom.xml + JAR + WSDL'ler ZIP olarak gelir.</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ── Kullanım Kılavuzu Modal ──────────────────────── -->
+<div class="guide-overlay" id="guideOverlay">
+    <div class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+
+        <div class="guide-header">
+            <div class="guide-title-row">
+                <div class="guide-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h2 class="guide-title" id="guideTitle">Kullanım Kılavuzu</h2>
+            </div>
+            <button class="guide-close" id="guideClose" aria-label="Kapat">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="guide-body">
+
+            <!-- ── Bölüm 1: Genel Bakış ── -->
+            <div class="guide-section">
+                <div class="guide-section-label">Nedir?</div>
+                <p class="guide-text">WSDL Client Generator, SOAP servis WSDL dosyalarından otomatik olarak <strong>Java client projesi</strong> üretir. Hem Prod hem Test ortamı destekler; çıktı olarak kaynak kodları, WSDL dosyaları ve kullanıma hazır JAR içeren bir ZIP paketi sunar.</p>
+            </div>
+
+            <!-- ── Bölüm 2: WSDL Kaynağı ── -->
+            <div class="guide-section">
+                <div class="guide-section-label">1 · WSDL Kaynağı</div>
+                <div class="guide-steps">
+                    <div class="guide-step">
+                        <div class="guide-step-icon guide-step-icon--prod">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v4l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <div>
+                            <div class="guide-step-title"><span class="env-badge env-prod">PROD</span> Zorunlu</div>
+                            <div class="guide-step-desc">URL girerek veya <code>.wsdl</code> / <code>.xml</code> dosyası yükleyerek belirtin. Her iki yöntem de desteklenir.</div>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="guide-step-icon guide-step-icon--test">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v4l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <div>
+                            <div class="guide-step-title"><span class="env-badge env-test">TEST</span> Opsiyonel</div>
+                            <div class="guide-step-desc">Girilmezse Prod WSDL kopyalanır. Test ortamı endpoint farklıysa ayrıca belirtilmesi önerilir.</div>
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="guide-step-icon">
+                            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        </div>
+                        <div>
+                            <div class="guide-step-title">Kod üretimi hangi WSDL'den?</div>
+                            <div class="guide-step-desc">Java stub sınıfları varsayılan olarak <strong>Prod WSDL</strong>'den üretilir. Prod ile Test şeması farklıysa bunu seçerek değiştirebilirsiniz.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Bölüm 3: Java Versiyonu ── -->
+            <div class="guide-section">
+                <div class="guide-section-label">2 · Java Versiyonu</div>
+                <div class="guide-compare">
+                    <div class="guide-compare-col">
+                        <div class="guide-compare-head guide-compare-head--old">Java 8 / 11</div>
+                        <ul class="guide-list">
+                            <li>JAX-WS RI kullanır</li>
+                            <li><code>javax.xml.ws.*</code> namespace</li>
+                            <li><code>javax.xml.bind.*</code> (JAXB)</li>
+                            <li>Legacy projeler için uygun</li>
+                        </ul>
+                    </div>
+                    <div class="guide-compare-col">
+                        <div class="guide-compare-head guide-compare-head--new">Java 17 / 21 <span class="version-badge" style="position:static;margin-left:6px">Önerilen</span></div>
+                        <ul class="guide-list">
+                            <li>Apache CXF 4.x kullanır</li>
+                            <li><code>jakarta.xml.ws.*</code> namespace</li>
+                            <li><code>jakarta.xml.bind.*</code> (JAXB)</li>
+                            <li>Modern Spring Boot ile uyumlu</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Bölüm 4: ZIP İçeriği ── -->
+            <div class="guide-section">
+                <div class="guide-section-label">3 · ZIP İçeriği</div>
+                <div class="guide-files">
+                    <div class="guide-file">
+                        <div class="guide-file-name">📄 pom.xml</div>
+                        <div class="guide-file-desc">Maven proje tanımı. Bağımlılıklar ve yeniden üretim plugin'i dahildir.</div>
+                    </div>
+                    <div class="guide-file">
+                        <div class="guide-file-name">📁 src/main/resources/wsdl/</div>
+                        <div class="guide-file-desc">Prod ve Test WSDL dosyaları. ServiceBean bu dosyaları classpath'ten okur.</div>
+                    </div>
+                    <div class="guide-file">
+                        <div class="guide-file-name">📁 src/main/java/…/</div>
+                        <div class="guide-file-desc">Üretilen stub sınıfları ve <code>util/XxxServiceBean.java</code>.</div>
+                    </div>
+                    <div class="guide-file">
+                        <div class="guide-file-name">📦 lib/*.jar</div>
+                        <div class="guide-file-desc">Tüm bağımlılıkları içeren fat JAR. Maven'a <code>install-local-m2.bat</code> ile kurulur.</div>
+                    </div>
+                    <div class="guide-file">
+                        <div class="guide-file-name">⚙️ install-local-m2.bat / .sh</div>
+                        <div class="guide-file-desc">JAR'ı yerel <code>.m2</code> deposuna kurar. Diğer projelerde bağımlılık olarak kullanmak için çalıştırın.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Bölüm 5: Kullanım ── -->
+            <div class="guide-section">
+                <div class="guide-section-label">4 · Projeyi Kullanma</div>
+                <div class="guide-usage-steps">
+                    <div class="guide-usage-step">
+                        <div class="guide-usage-num">1</div>
+                        <div>
+                            <div class="guide-usage-title">ZIP'i Aç & IntelliJ'e Aktar</div>
+                            <div class="guide-usage-desc">ZIP'i çıkartın, IntelliJ'de <em>File → Open</em> ile <code>pom.xml</code> seçin. Maven projesi olarak tanınır.</div>
+                        </div>
+                    </div>
+                    <div class="guide-usage-step">
+                        <div class="guide-usage-num">2</div>
+                        <div>
+                            <div class="guide-usage-title">Yerel Depoya Kur</div>
+                            <div class="guide-usage-desc"><code>install-local-m2.bat</code>'ı çalıştırın. Bu, JAR'ı <code>~/.m2</code>'ye kopyalar; başka Maven projelerinden <code>&lt;dependency&gt;</code> ile eklenebilir hale gelir.</div>
+                        </div>
+                    </div>
+                    <div class="guide-usage-step">
+                        <div class="guide-usage-num">3</div>
+                        <div>
+                            <div class="guide-usage-title">ServiceBean ile Servis Çağrısı</div>
+                            <div class="guide-usage-desc">Üretilen <code>XxxServiceBean.SINGLETON.getPort()</code> üzerinden metotları çağırın. Ortam, kullanıcı adı ve şifre <code>SOA_ENVIRONMENT</code>, <code>SOA_WEBSERVICE_USERNAME</code>, <code>SOA_WEBSERVICE_PASSWORD</code> ortam değişkenlerinden okunur.</div>
+                        </div>
+                    </div>
+                    <div class="guide-usage-step">
+                        <div class="guide-usage-num">4</div>
+                        <div>
+                            <div class="guide-usage-title">WSDL Değişince Yeniden Üret</div>
+                            <div class="guide-usage-desc"><code>src/main/resources/wsdl/</code> altındaki WSDL'i güncelleyin, ardından <code>mvn clean install</code> çalıştırın. Plugin stub sınıflarını otomatik olarak yeniden üretir.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-code-block">
+                    <div class="guide-code-label">Örnek Kullanım</div>
+                    <pre class="guide-code">// ServiceBean.SINGLETON otomatik ortam seçimi yapar
+MuhasebePortType port = MuhasebeServiceBean.SINGLETON.getPort();
+GetMuhasebeFisResponse resp = port.getMuhasebeFis(request);</pre>
+                </div>
+
+                <div class="guide-code-block">
+                    <div class="guide-code-label">Bağımlılık Olarak Eklemek İçin</div>
+                    <pre class="guide-code">&lt;dependency&gt;
+    &lt;groupId&gt;com.example&lt;/groupId&gt;
+    &lt;artifactId&gt;soap-client&lt;/artifactId&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+                </div>
+            </div>
+
+            <!-- ── Bölüm 6: Ortam Değişkenleri ── -->
+            <div class="guide-section">
+                <div class="guide-section-label">5 · Ortam Değişkenleri</div>
+                <div class="guide-env-table">
+                    <div class="guide-env-row guide-env-header">
+                        <div>Değişken</div>
+                        <div>Değerler</div>
+                        <div>Açıklama</div>
+                    </div>
+                    <div class="guide-env-row">
+                        <div><code>SOA_ENVIRONMENT</code></div>
+                        <div><code>prod</code> | <code>test</code></div>
+                        <div>Hangi WSDL endpoint'inin kullanılacağını belirler. Varsayılan: <code>prod</code></div>
+                    </div>
+                    <div class="guide-env-row">
+                        <div><code>SOA_WEBSERVICE_USERNAME</code></div>
+                        <div>string</div>
+                        <div>WS-Security kullanıcı adı</div>
+                    </div>
+                    <div class="guide-env-row">
+                        <div><code>SOA_WEBSERVICE_PASSWORD</code></div>
+                        <div>string</div>
+                        <div>WS-Security şifresi</div>
+                    </div>
+                </div>
+                <p class="guide-text guide-text--small">System property'ler de desteklenir: <code>soa.environment</code>, <code>soa.webservice.username</code>, <code>soa.webservice.password</code></p>
+            </div>
+
+        </div><!-- /guide-body -->
+    </div><!-- /guide-modal -->
+</div><!-- /guide-overlay -->
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

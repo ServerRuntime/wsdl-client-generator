@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>İşlem Durumu — WSDL Client Generator</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}"/>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script>
+        (function() {
+            const t = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+<div class="page">
+
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M4 6h5l3 4-3 4H4l3-4-3-4zm6 0h6" stroke="white" stroke-width="1.8"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <span>WSDL Client Generator</span>
+            </div>
+            <div class="header-right">
+                <a th:href="@{/}" class="btn-back">← Yeni İstek</a>
+                <button class="theme-toggle" id="themeToggle" title="Tema değiştir" aria-label="Tema değiştir">
+                    <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 2v2m0 16v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M2 12h2m16 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="card status-card">
+
+            <div class="status-header">
+                <div class="status-icon" id="statusIcon">
+                    <!-- JS tarafından doldurulur -->
+                    <div class="spinner"></div>
+                </div>
+                <div class="status-meta">
+                    <h1 class="status-title" id="statusTitle">İşlem Başlatıldı</h1>
+                    <p class="status-msg"  id="statusMsg">Lütfen bekleyin...</p>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-wrap">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                </div>
+                <span class="progress-pct" id="progressPct">0%</span>
+            </div>
+
+            <!-- Aşama adımları -->
+            <div class="pipeline">
+                <div class="pipe-step" id="pipe-FETCHING_WSDL">
+                    <div class="pipe-dot"></div>
+                    <span>WSDL İndir</span>
+                </div>
+                <div class="pipe-line"></div>
+                <div class="pipe-step" id="pipe-GENERATING_CODE">
+                    <div class="pipe-dot"></div>
+                    <span>Kod Üret</span>
+                </div>
+                <div class="pipe-line"></div>
+                <div class="pipe-step" id="pipe-BUILDING">
+                    <div class="pipe-dot"></div>
+                    <span>Maven Build</span>
+                </div>
+                <div class="pipe-line"></div>
+                <div class="pipe-step" id="pipe-PACKAGING">
+                    <div class="pipe-dot"></div>
+                    <span>ZIP Paketle</span>
+                </div>
+                <div class="pipe-line"></div>
+                <div class="pipe-step" id="pipe-COMPLETED">
+                    <div class="pipe-dot"></div>
+                    <span>Tamamlandı</span>
+                </div>
+            </div>
+
+            <!-- İndirme butonu (COMPLETED durumunda gösterilir) -->
+            <div id="downloadSection" class="download-section hidden">
+                <div class="download-box">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                        <circle cx="20" cy="20" r="19" stroke="#22c55e" stroke-width="1.5"/>
+                        <path d="M20 12v12m0 0-4-4m4 4 4-4" stroke="#22c55e" stroke-width="1.5"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M13 28h14" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <div class="download-info">
+                        <p class="download-label">Client hazır!</p>
+                        <p class="download-hint">pom.xml + derlemiş JAR içeren ZIP</p>
+                    </div>
+                    <a id="downloadBtn" href="#" class="btn-download">İndir</a>
+                </div>
+            </div>
+
+            <!-- Hata bölümü (FAILED durumunda gösterilir) -->
+            <div id="errorSection" class="error-section hidden">
+                <div class="alert alert-error">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 5v4m0 2v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    <span>Build başarısız oldu.</span>
+                </div>
+                <pre class="error-detail" id="errorDetail"></pre>
+            </div>
+
+            <div class="job-meta">
+                <span>Job ID: </span>
+                <code th:text="${job.id}">job-id</code>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script th:inline="javascript">
+    const JOB_ID   = [[${job.id}]];
+    const API_BASE  = [[@{/api/jobs/}]];
+    const DOWN_BASE = [[@{/api/jobs/}]];
+</script>
+<script th:src="@{/js/status.js}"></script>
+</body>
+</html>

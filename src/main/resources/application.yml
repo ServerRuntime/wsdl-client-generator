@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: wsdl-client-generator
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /soap-client-generator
+
+app:
+  temp-dir: ${java.io.tmpdir}/wsdl-generator
+  maven-executable: "C:/Program Files/JetBrains/IntelliJ IDEA 2025.2.4/plugins/maven/lib/maven3/bin/mvn.cmd"
+  job-ttl-minutes: 60
+  async:
+    core-pool-size: 4
+    max-pool-size: 10
+    queue-capacity: 50
