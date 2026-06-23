@@ -15,7 +15,7 @@ server:
 
 app:
   temp-dir: ${java.io.tmpdir}/wsdl-generator
-  maven-executable: "C:/Program Files/JetBrains/IntelliJ IDEA 2025.2.4/plugins/maven/lib/maven3/bin/mvn.cmd"
+  maven-executable: "mvn"
   job-ttl-minutes: 60
   async:
     core-pool-size: 4

@@ -34,8 +34,9 @@ public class BuildService {
         pb.directory(workDir.toFile());
         pb.redirectErrorStream(true);
 
-        // Maven'ın kullandığı JDK'yı Spring Boot'un çalıştığı JDK ile eşitle
-        String javaHome = System.getProperty("java.home");
+        // JAVA_HOME env varsa onu kullan (JDK), yoksa java.home'a düş (JRE olabilir)
+        String javaHome = System.getenv("JAVA_HOME");
+        if (javaHome == null) javaHome = System.getProperty("java.home");
         if (javaHome != null) {
             pb.environment().put("JAVA_HOME", javaHome);
             log.info("JAVA_HOME → {}", javaHome);
