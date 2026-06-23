@@ -30,10 +30,11 @@ public class WsdlParserService {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
-            // XXE koruması
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            // XXE koruması — DOCTYPE'a izin ver, sadece external entity erişimi engelle
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            factory.setExpandEntityReferences(false);
 
             return factory.newDocumentBuilder().parse(wsdlFile.toFile());
         } catch (Exception e) {

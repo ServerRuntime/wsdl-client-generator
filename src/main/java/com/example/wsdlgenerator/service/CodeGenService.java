@@ -21,10 +21,11 @@ public class CodeGenService {
         Files.createDirectories(sourceDir);
 
         String[] args = {
-            "-d",       sourceDir.toAbsolutePath().toString(),
-            "-p",       targetPackage,
+            "-d",                  sourceDir.toAbsolutePath().toString(),
+            "-p",                  targetPackage,
             "-verbose",
-            "-exsh",    "true",
+            "-exsh",               "true",
+            "-autoNameResolution",
             wsdlPath.toAbsolutePath().toString()
         };
 

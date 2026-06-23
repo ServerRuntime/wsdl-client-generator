@@ -26,7 +26,6 @@ public class BuildService {
             "package",
             "-f", workDir.resolve("pom.xml").toAbsolutePath().toString(),
             "-DskipTests",
-            "-DskipWsdlGenerate=true",
             "--batch-mode",
             "-q"
         );

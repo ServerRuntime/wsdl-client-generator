@@ -29,7 +29,7 @@ public class PomGeneratorService {
         return pomFile;
     }
 
-    // ── Java 8 ── javax namespace; build Java 17 JVM'de yapıldığından bağımlılıklar gerekli ─
+    // ── Java 8 ── javax namespace ─
     private String buildJava8Pom(String groupId, String artifactId, String version,
                                   String wsdlFilename, String targetPackage) {
         return """
@@ -48,7 +48,6 @@ public class PomGeneratorService {
                     <maven.compiler.source>1.8</maven.compiler.source>
                     <maven.compiler.target>1.8</maven.compiler.target>
                     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                    <skipWsdlGenerate>false</skipWsdlGenerate>
                 </properties>
 
                 <dependencies>
@@ -86,9 +85,20 @@ public class PomGeneratorService {
                                 <target>1.8</target>
                             </configuration>
                         </plugin>
-                        %s
                     </plugins>
                 </build>
+
+                <!-- mvn clean install -Pregenerate -->
+                <profiles>
+                    <profile>
+                        <id>regenerate</id>
+                        <build>
+                            <plugins>
+                                %s
+                            </plugins>
+                        </build>
+                    </profile>
+                </profiles>
             </project>
             """.formatted(groupId, artifactId, version, resourcesBlock(),
                           jaxwsMavenPlugin(wsdlFilename, targetPackage));
@@ -113,7 +123,6 @@ public class PomGeneratorService {
                     <maven.compiler.source>11</maven.compiler.source>
                     <maven.compiler.target>11</maven.compiler.target>
                     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                    <skipWsdlGenerate>false</skipWsdlGenerate>
                 </properties>
 
                 <dependencies>
@@ -151,9 +160,20 @@ public class PomGeneratorService {
                                 <target>11</target>
                             </configuration>
                         </plugin>
-                        %s
                     </plugins>
                 </build>
+
+                <!-- mvn clean install -Pregenerate -->
+                <profiles>
+                    <profile>
+                        <id>regenerate</id>
+                        <build>
+                            <plugins>
+                                %s
+                            </plugins>
+                        </build>
+                    </profile>
+                </profiles>
             </project>
             """.formatted(groupId, artifactId, version, resourcesBlock(),
                           jaxwsMavenPlugin(wsdlFilename, targetPackage));
@@ -181,7 +201,6 @@ public class PomGeneratorService {
                     <maven.compiler.target>%s</maven.compiler.target>
                     <cxf.version>4.0.4</cxf.version>
                     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                    <skipWsdlGenerate>false</skipWsdlGenerate>
                 </properties>
 
                 <dependencies>
@@ -230,71 +249,81 @@ public class PomGeneratorService {
                             </configuration>
                         </plugin>
                         %s
-                        %s
                     </plugins>
                 </build>
+
+                <!-- mvn clean install -Pregenerate -->
+                <profiles>
+                    <profile>
+                        <id>regenerate</id>
+                        <build>
+                            <plugins>
+                                %s
+                            </plugins>
+                        </build>
+                    </profile>
+                </profiles>
             </project>
             """.formatted(groupId, artifactId, version,
                           sv, sv,
                           resourcesBlock(),
                           sv, sv,
-                          cxfCodegenPlugin(wsdlFilename, targetPackage),
-                          shadePlugin());
+                          shadePlugin(),
+                          cxfCodegenPlugin(wsdlFilename, targetPackage));
     }
 
     private String jaxwsMavenPlugin(String wsdlFilename, String targetPackage) {
         return """
             <plugin>
-                            <groupId>com.sun.xml.ws</groupId>
-                            <artifactId>jaxws-maven-plugin</artifactId>
-                            <version>2.3.7</version>
-                            <executions>
-                                <execution>
-                                    <goals><goal>wsimport</goal></goals>
-                                </execution>
-                            </executions>
-                            <configuration>
-                                <skip>${skipWsdlGenerate}</skip>
-                                <wsdlDirectory>${project.basedir}/src/main/resources/wsdl</wsdlDirectory>
-                                <wsdlFiles>
-                                    <wsdlFile>%s</wsdlFile>
-                                </wsdlFiles>
-                                <packageName>%s</packageName>
-                                <sourceDestDir>${project.basedir}/src/main/java</sourceDestDir>
-                                <keep>true</keep>
-                            </configuration>
-                        </plugin>""".formatted(wsdlFilename, targetPackage);
+                                <groupId>com.sun.xml.ws</groupId>
+                                <artifactId>jaxws-maven-plugin</artifactId>
+                                <version>2.3.7</version>
+                                <executions>
+                                    <execution>
+                                        <goals><goal>wsimport</goal></goals>
+                                    </execution>
+                                </executions>
+                                <configuration>
+                                    <wsdlDirectory>${project.basedir}/src/main/resources/wsdl</wsdlDirectory>
+                                    <wsdlFiles>
+                                        <wsdlFile>%s</wsdlFile>
+                                    </wsdlFiles>
+                                    <packageName>%s</packageName>
+                                    <sourceDestDir>${project.basedir}/src/main/java</sourceDestDir>
+                                    <keep>true</keep>
+                                </configuration>
+                            </plugin>""".formatted(wsdlFilename, targetPackage);
     }
 
     private String cxfCodegenPlugin(String wsdlFilename, String targetPackage) {
         return """
             <plugin>
-                            <groupId>org.apache.cxf</groupId>
-                            <artifactId>cxf-codegen-plugin</artifactId>
-                            <version>4.0.4</version>
-                            <executions>
-                                <execution>
-                                    <goals><goal>wsdl2java</goal></goals>
-                                </execution>
-                            </executions>
-                            <configuration>
-                                <skip>${skipWsdlGenerate}</skip>
-                                <fork>false</fork>
-                                <sourceRoot>${project.basedir}/src/main/java</sourceRoot>
-                                <wsdlOptions>
-                                    <wsdlOption>
-                                        <wsdl>${project.basedir}/src/main/resources/wsdl/%s</wsdl>
-                                        <packagenames>
-                                            <packagename>%s</packagename>
-                                        </packagenames>
-                                        <extraargs>
-                                            <extraarg>-exsh</extraarg>
-                                            <extraarg>true</extraarg>
-                                        </extraargs>
-                                    </wsdlOption>
-                                </wsdlOptions>
-                            </configuration>
-                        </plugin>""".formatted(wsdlFilename, targetPackage);
+                                <groupId>org.apache.cxf</groupId>
+                                <artifactId>cxf-codegen-plugin</artifactId>
+                                <version>4.0.4</version>
+                                <executions>
+                                    <execution>
+                                        <goals><goal>wsdl2java</goal></goals>
+                                    </execution>
+                                </executions>
+                                <configuration>
+                                    <fork>false</fork>
+                                    <sourceRoot>${project.basedir}/src/main/java</sourceRoot>
+                                    <wsdlOptions>
+                                        <wsdlOption>
+                                            <wsdl>${project.basedir}/src/main/resources/wsdl/%s</wsdl>
+                                            <packagenames>
+                                                <packagename>%s</packagename>
+                                            </packagenames>
+                                            <extraargs>
+                                                <extraarg>-exsh</extraarg>
+                                                <extraarg>true</extraarg>
+                                                <extraarg>-autoNameResolution</extraarg>
+                                            </extraargs>
+                                        </wsdlOption>
+                                    </wsdlOptions>
+                                </configuration>
+                            </plugin>""".formatted(wsdlFilename, targetPackage);
     }
 
     private String resourcesBlock() {
