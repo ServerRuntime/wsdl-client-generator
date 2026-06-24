@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>JAR → WSDL | WSDL Client Generator</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}"/>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+    <script>
+        (function() {
+            const t = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+</head>
+<body>
+<div class="page">
+
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M4 6h5l3 4-3 4H4l3-4-3-4zm6 0h6" stroke="white" stroke-width="1.8"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <span>WSDL Client Generator</span>
+            </div>
+            <div class="header-right">
+                <a class="btn-jar2wsdl btn-jar2wsdl--active" th:href="@{/jar2wsdl}" title="JAR'dan WSDL Çıkar">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    JAR → WSDL
+                </a>
+                <button class="theme-toggle" id="themeToggle" title="Tema değiştir" aria-label="Tema değiştir">
+                    <svg class="icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <svg class="icon-sun" width="17" height="17" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M12 2v2m0 16v2M4.22 4.22l1.42 1.42m12.72 12.72 1.42 1.42M2 12h2m16 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="jar2wsdl-page">
+
+            <!-- Geri butonu + başlık -->
+            <div class="jar2wsdl-page-header">
+                <a th:href="@{/}" class="btn-back">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                        <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Ana Sayfa
+                </a>
+                <div class="jar2wsdl-page-title-group">
+                    <div class="jar2wsdl-page-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="7 10 12 15 17 10" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="12" y1="15" x2="12" y2="3" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="jar2wsdl-page-title">JAR → WSDL Çıkarıcı</h1>
+                        <p class="jar2wsdl-page-desc">JAR içine gömülü WSDL dosyalarını bulur ve indirir</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kart -->
+            <div class="card jar2wsdl-card">
+
+                <!-- Bilgi satırı -->
+                <div class="jar2wsdl-info-bar">
+                    <div class="jar2wsdl-info-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M12 8v.01M12 11v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        <span>CXF ve JAX-WS ile üretilmiş istemci JAR'larını destekler</span>
+                    </div>
+                    <div class="jar2wsdl-info-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
+                            <path d="M12 8v.01M12 11v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        <span>Maks 50 MB · Yalnızca .jar</span>
+                    </div>
+                </div>
+
+                <!-- Yükleme alanı -->
+                <div class="jar2wsdl-drop-area" id="jar2wsdlDrop">
+                    <div class="jar2wsdl-drop-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                            <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.4"/>
+                            <path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="jar2wsdl-drop-text">JAR dosyasını buraya sürükle &amp; bırak</p>
+                    <p class="jar2wsdl-drop-or">veya</p>
+                    <label class="btn-primary jar2wsdl-pick-btn" for="jar2wsdlFileInput">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                        Dosya Seç
+                    </label>
+                    <input type="file" id="jar2wsdlFileInput" accept=".jar" style="display:none">
+                    <p class="jar2wsdl-hint">.jar · Maks 50 MB</p>
+                </div>
+
+                <!-- Yükleniyor -->
+                <div class="jar2wsdl-loading" id="jar2wsdlLoading" style="display:none">
+                    <div class="spinner"></div>
+                    <span id="jar2wsdlLoadingText">JAR taranıyor…</span>
+                </div>
+
+                <!-- Hata -->
+                <div class="jar2wsdl-error" id="jar2wsdlError" style="display:none"></div>
+
+                <!-- Sonuç -->
+                <div class="jar2wsdl-result" id="jar2wsdlResult" style="display:none">
+                    <div class="jar2wsdl-result-header">
+                        <div class="jar2wsdl-result-meta">
+                            <span class="jar2wsdl-result-badge" id="jar2wsdlBadge"></span>
+                            <span class="jar2wsdl-result-filename" id="jar2wsdlFilename"></span>
+                        </div>
+                        <div class="jar2wsdl-result-actions">
+                            <button class="btn-secondary jar2wsdl-reset-btn" id="jar2wsdlResetBtn">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                                    <path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Yeni JAR
+                            </button>
+                            <button class="btn-primary jar2wsdl-download-all-btn" id="jar2wsdlDownloadAllBtn" style="display:none">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                                Tümünü İndir (.zip)
+                            </button>
+                        </div>
+                    </div>
+                    <div class="jar2wsdl-wsdl-list" id="jar2wsdlList"></div>
+                </div>
+
+            </div><!-- /card -->
+
+        </div><!-- /jar2wsdl-page -->
+    </main>
+
+</div><!-- /page -->
+
+<script th:src="@{/js/jar2wsdl.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

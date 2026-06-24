@@ -29,6 +29,14 @@
                 <span>WSDL Client Generator</span>
             </div>
             <div class="header-right">
+                <a class="btn-jar2wsdl" th:href="@{/jar2wsdl}" title="JAR'dan WSDL Çıkar">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    JAR → WSDL
+                </a>
                 <button class="btn-guide" id="guideBtn" title="Kullanım Kılavuzu">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/>
@@ -76,17 +84,27 @@
                                 <span class="env-desc">Zorunlu</span>
                             </div>
                             <div class="tab-group">
-                                <button type="button" class="tab active" data-tab="prod-url">URL</button>
-                                <button type="button" class="tab" data-tab="prod-file">Dosya</button>
+                                <button type="button"
+                                        th:classappend="${urlInputEnabled} ? 'active' : 'tab-disabled'"
+                                        th:disabled="${!urlInputEnabled}"
+                                        class="tab"
+                                        data-tab="prod-url">
+                                    URL
+                                    <span th:if="${!urlInputEnabled}" class="tab-soon">Yakında</span>
+                                </button>
+                                <button type="button"
+                                        th:classappend="${urlInputEnabled} ? '' : 'active'"
+                                        class="tab"
+                                        data-tab="prod-file">Dosya</button>
                             </div>
-                            <div id="tab-prod-url" class="tab-content">
+                            <div id="tab-prod-url" th:classappend="${urlInputEnabled} ? '' : 'hidden'" class="tab-content">
                                 <div class="input-group">
                                     <label class="input-label" for="wsdlUrlProd">Prod WSDL URL</label>
                                     <input type="url" id="wsdlUrlProd" name="wsdlUrlProd"
                                            placeholder="https://example.com/service?wsdl" class="input"/>
                                 </div>
                             </div>
-                            <div id="tab-prod-file" class="tab-content hidden">
+                            <div id="tab-prod-file" th:classappend="${urlInputEnabled} ? 'hidden' : ''" class="tab-content">
                                 <div class="input-group">
                                     <label class="input-label">Prod WSDL Dosyası</label>
                                     <div class="file-drop" id="fileDropProd">
@@ -111,17 +129,27 @@
                                 <span class="env-desc">Opsiyonel — girilmezse Prod kullanılır</span>
                             </div>
                             <div class="tab-group">
-                                <button type="button" class="tab active" data-tab="test-url">URL</button>
-                                <button type="button" class="tab" data-tab="test-file">Dosya</button>
+                                <button type="button"
+                                        th:classappend="${urlInputEnabled} ? 'active' : 'tab-disabled'"
+                                        th:disabled="${!urlInputEnabled}"
+                                        class="tab"
+                                        data-tab="test-url">
+                                    URL
+                                    <span th:if="${!urlInputEnabled}" class="tab-soon">Yakında</span>
+                                </button>
+                                <button type="button"
+                                        th:classappend="${urlInputEnabled} ? '' : 'active'"
+                                        class="tab"
+                                        data-tab="test-file">Dosya</button>
                             </div>
-                            <div id="tab-test-url" class="tab-content">
+                            <div id="tab-test-url" th:classappend="${urlInputEnabled} ? '' : 'hidden'" class="tab-content">
                                 <div class="input-group">
                                     <label class="input-label" for="wsdlUrlTest">Test WSDL URL</label>
                                     <input type="url" id="wsdlUrlTest" name="wsdlUrlTest"
                                            placeholder="https://test.example.com/service?wsdl" class="input"/>
                                 </div>
                             </div>
-                            <div id="tab-test-file" class="tab-content hidden">
+                            <div id="tab-test-file" th:classappend="${urlInputEnabled} ? 'hidden' : ''" class="tab-content">
                                 <div class="input-group">
                                     <label class="input-label">Test WSDL Dosyası</label>
                                     <div class="file-drop" id="fileDropTest">
@@ -448,6 +476,7 @@ GetMuhasebeFisResponse resp = port.getMuhasebeFis(request);</pre>
         </div><!-- /guide-body -->
     </div><!-- /guide-modal -->
 </div><!-- /guide-overlay -->
+
 
 <script th:src="@{/js/app.js}"></script>
 </body>

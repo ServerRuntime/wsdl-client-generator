@@ -16,6 +16,7 @@ server:
 app:
   temp-dir: ${java.io.tmpdir}/wsdl-generator
   maven-executable: "mvn"
+  url-input-enabled: false   # true → URL sekmesi aktif, false → Yakında (devre dışı)
   job-ttl-minutes: 60
   async:
     core-pool-size: 4

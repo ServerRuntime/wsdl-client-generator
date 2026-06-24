@@ -178,7 +178,7 @@ body::before {
 .tab-group {
   display: flex; gap: 2px;
   background: var(--bg3); border-radius: var(--radius-sm);
-  padding: 3px; margin-bottom: 16px; width: fit-content;
+  padding: 3px; margin-bottom: 8px; width: fit-content;
   border: 1px solid var(--border);
 }
 .tab {
@@ -192,13 +192,26 @@ body::before {
   box-shadow: var(--shadow-sm);
 }
 .tab-content.hidden { display: none; }
+.tab-content { margin-top: -2px; }
+.tab-disabled {
+  cursor: not-allowed !important; opacity: .5;
+  pointer-events: none;
+}
+.tab-soon {
+  display: inline-block; margin-left: 6px;
+  font-size: .68rem; font-weight: 600; letter-spacing: .03em;
+  padding: 1px 6px; border-radius: 4px;
+  background: rgba(245,158,11,.15); color: var(--yellow);
+  border: 1px solid rgba(245,158,11,.3);
+  vertical-align: middle;
+}
 
 /* ── Inputs ───────────────────────────────────────────── */
-.input-group { display: flex; flex-direction: column; gap: 7px; }
+.input-group { display: flex; flex-direction: column; gap: 5px; }
 .input-label { font-size: .78rem; color: var(--text2); font-weight: 600; }
 
 .input {
-  width: 100%; padding: 11px 14px;
+  width: 100%; padding: 8px 12px;
   background: var(--bg3); border: 1px solid var(--border);
   border-radius: var(--radius-sm); color: var(--text);
   font-size: .9rem; outline: none; font-family: inherit;
@@ -445,8 +458,8 @@ body::before {
 
 .wsdl-env-block {
   background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 16px;
-  display: flex; flex-direction: column; gap: 10px;
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 8px;
   transition: border-color var(--transition), background var(--transition);
 }
 .wsdl-env-block:focus-within { border-color: var(--border-hi); }
@@ -532,7 +545,125 @@ body::before {
   white-space: nowrap;
 }
 
-/* ── Guide Button ─────────────────────────────────────── */
+/* ── Back Button ──────────────────────────────────────── */
+.btn-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text2); font-size: .82rem; font-weight: 500;
+  text-decoration: none; cursor: pointer; font-family: inherit;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.btn-back:hover { color: var(--text); border-color: var(--border-hi); background: var(--accent-glow); }
+
+/* ── Secondary Button ─────────────────────────────────── */
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text2); font-size: .82rem; font-weight: 500;
+  cursor: pointer; font-family: inherit;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.btn-secondary:hover { color: var(--text); border-color: var(--border-hi); background: var(--accent-glow); }
+
+/* ── JAR → WSDL Page Layout ───────────────────────────── */
+.jar2wsdl-page { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+.jar2wsdl-page-header { display: flex; flex-direction: column; gap: 16px; }
+
+.jar2wsdl-page-title-group {
+  display: flex; align-items: center; gap: 14px;
+}
+.jar2wsdl-page-icon {
+  width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent), #818cf8);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(99,102,241,.35);
+}
+.jar2wsdl-page-title { font-size: 1.35rem; font-weight: 700; color: var(--text); }
+.jar2wsdl-page-desc  { font-size: .85rem; color: var(--text2); margin-top: 3px; }
+
+.jar2wsdl-card { display: flex; flex-direction: column; gap: 20px; }
+
+.jar2wsdl-info-bar {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  padding: 10px 14px; background: var(--bg3);
+  border-radius: var(--radius-sm); border: 1px solid var(--border);
+}
+.jar2wsdl-info-item { display: flex; align-items: center; gap: 7px; font-size: .8rem; color: var(--text2); }
+
+/* Drop area */
+.jar2wsdl-drop-area {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  padding: 56px 24px; border: 2px dashed var(--border); border-radius: var(--radius);
+  cursor: pointer; text-align: center;
+  transition: border-color var(--transition), background var(--transition);
+}
+.jar2wsdl-drop-area.drag-over { border-color: var(--accent); background: var(--accent-glow); }
+.jar2wsdl-drop-icon { color: var(--text3); margin-bottom: 4px; }
+.jar2wsdl-drop-text { font-size: .95rem; color: var(--text); font-weight: 500; }
+.jar2wsdl-drop-or   { font-size: .82rem; color: var(--text3); }
+.jar2wsdl-hint      { font-size: .78rem; color: var(--text3); margin-top: 4px; }
+.jar2wsdl-pick-btn  { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+/* Loading */
+.jar2wsdl-loading {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 48px 0; color: var(--text2); font-size: .9rem;
+}
+
+/* Error */
+.jar2wsdl-error {
+  padding: 12px 16px; background: rgba(239,68,68,.1);
+  border: 1px solid rgba(239,68,68,.3); border-radius: var(--radius-sm);
+  color: var(--red); font-size: .85rem;
+}
+
+/* Result */
+.jar2wsdl-result { display: flex; flex-direction: column; gap: 14px; }
+
+.jar2wsdl-result-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap;
+}
+.jar2wsdl-result-meta   { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.jar2wsdl-result-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.jar2wsdl-result-filename { font-size: .83rem; color: var(--text2); font-family: monospace; }
+
+.jar2wsdl-result-badge {
+  font-size: .76rem; font-weight: 600; padding: 3px 10px;
+  border-radius: 20px; white-space: nowrap;
+}
+.badge-ok   { background: var(--green-glow); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
+.badge-warn { background: rgba(245,158,11,.1); color: var(--yellow); border: 1px solid rgba(245,158,11,.3); }
+
+.jar2wsdl-wsdl-list {
+  display: flex; flex-direction: column; gap: 8px;
+  max-height: 420px; overflow-y: auto;
+  padding-right: 2px;
+}
+.jar2wsdl-wsdl-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px; background: var(--bg3);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  transition: border-color var(--transition);
+}
+.jar2wsdl-wsdl-item:hover { border-color: var(--border-hi); }
+.jar2wsdl-wsdl-item-info { display: flex; align-items: center; gap: 10px; color: var(--text2); min-width: 0; }
+.jar2wsdl-wsdl-item-name { display: block; font-size: .88rem; color: var(--text); font-weight: 500; }
+.jar2wsdl-wsdl-item-path { display: block; font-size: .75rem; color: var(--text3); font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 380px; }
+
+.jar2wsdl-dl-btn {
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 6px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--accent); font-size: .78rem; cursor: pointer; font-family: inherit;
+  transition: background var(--transition), border-color var(--transition);
+}
+.jar2wsdl-dl-btn:hover { background: var(--accent-glow); border-color: var(--accent); }
+
+/* Guide Button ─────────────────────────────────────── */
 .btn-guide {
   display: flex; align-items: center; gap: 6px;
   padding: 7px 14px; border-radius: var(--radius-sm);
@@ -542,6 +673,67 @@ body::before {
   transition: color var(--transition), border-color var(--transition), background var(--transition);
 }
 .btn-guide:hover { color: var(--text); border-color: var(--border-hi); background: var(--accent-glow); }
+
+/* ── JAR → WSDL Button ────────────────────────────────── */
+.btn-jar2wsdl {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text2); font-size: .82rem; font-weight: 500;
+  cursor: pointer; font-family: inherit; text-decoration: none;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+.btn-jar2wsdl:hover { color: var(--text); border-color: var(--accent); background: var(--accent-glow); }
+.btn-jar2wsdl--active { color: var(--text); border-color: var(--accent); background: var(--accent-glow); }
+
+.jar2wsdl-drop-area {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 48px 24px;
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  color: var(--text2); text-align: center;
+  transition: border-color var(--transition), background var(--transition);
+  cursor: pointer;
+}
+.jar2wsdl-drop-area.drag-over {
+  border-color: var(--accent); background: var(--accent-glow);
+}
+.jar2wsdl-drop-text { font-size: .9rem; }
+.jar2wsdl-hint { font-size: .78rem; color: var(--text3); }
+.jar2wsdl-pick-btn { cursor: pointer; }
+
+.jar2wsdl-result {
+  display: flex; flex-direction: column; gap: 12px; margin-top: 4px;
+}
+.jar2wsdl-result-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.jar2wsdl-result-title { font-size: .85rem; color: var(--text2); }
+.jar2wsdl-download-btn { padding: 7px 18px; font-size: .82rem; }
+
+.jar2wsdl-wsdl-list {
+  display: flex; flex-direction: column; gap: 8px;
+  max-height: 320px; overflow-y: auto;
+}
+.jar2wsdl-wsdl-item {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  font-size: .8rem; color: var(--text2);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.jar2wsdl-wsdl-item span { color: var(--text); font-family: monospace; }
+.jar2wsdl-wsdl-item button {
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  color: var(--accent); font-size: .76rem; cursor: pointer; font-family: inherit;
+  transition: background var(--transition), border-color var(--transition);
+}
+.jar2wsdl-wsdl-item button:hover { background: var(--accent-glow); border-color: var(--accent); }
+
+.jar2wsdl-error {
+  margin-top: 8px; padding: 12px 16px;
+  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3);
+  border-radius: var(--radius-sm); color: var(--red); font-size: .83rem;
+}
 
 /* ── Guide Modal Overlay ──────────────────────────────── */
 .guide-overlay {

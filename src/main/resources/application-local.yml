@@ -7,6 +7,7 @@ server:
 
 app:
   maven-executable: "C:/Program Files/JetBrains/IntelliJ IDEA 2025.2.4/plugins/maven/lib/maven3/bin/mvn.cmd"
+  url-input-enabled: true
   temp-dir: ${java.io.tmpdir}/wsdl-generator
   job-ttl-minutes: 60
   async:

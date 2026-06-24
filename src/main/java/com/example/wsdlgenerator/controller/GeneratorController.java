@@ -2,6 +2,7 @@ package com.example.wsdlgenerator.controller;
 
 import com.example.wsdlgenerator.model.*;
 import com.example.wsdlgenerator.service.GenerationOrchestrator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,9 @@ public class GeneratorController {
 
     private final GenerationOrchestrator orchestrator;
 
+    @Value("${app.url-input-enabled:true}")
+    private boolean urlInputEnabled;
+
     public GeneratorController(GenerationOrchestrator orchestrator) {
         this.orchestrator = orchestrator;
     }
@@ -19,6 +23,7 @@ public class GeneratorController {
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("javaVersions", JavaVersion.values());
+        model.addAttribute("urlInputEnabled", urlInputEnabled);
         return "index";
     }
 
@@ -62,5 +67,10 @@ public class GeneratorController {
     public String status(@PathVariable String jobId, Model model) {
         model.addAttribute("job", orchestrator.getJob(jobId));
         return "status";
+    }
+
+    @GetMapping("/jar2wsdl")
+    public String jar2wsdl() {
+        return "jar2wsdl";
     }
 }
